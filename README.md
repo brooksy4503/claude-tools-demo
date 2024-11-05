@@ -1,8 +1,12 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Claude Tools Demo
 
-## Getting Started
+A demo application showcasing Claude's tool use capabilities through OpenRouter.
 
-First, run the development server:
+## Setup
+
+1. Get an API key from [OpenRouter](https://openrouter.ai/keys)
+
+2. Create a `.env.local` file in the root directory with the following:
 
 ```bash
 npm run dev

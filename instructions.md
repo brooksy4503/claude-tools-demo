@@ -195,3 +195,245 @@ Common Deployment Issues:
    - Add request timeouts
    - Implement retry logic
    - Cache responses where appropriate
+
+## Tool Implementation Challenges
+
+### TypeScript Type Safety Errors
+
+#### Tool Argument Handling
+**Error**: Argument of type 'string | undefined' is not assignable to parameter of type 'string'
+**Fix**: Modify `executeToolCall` to handle optional arguments safely
+```typescript
+export const executeToolCall = async (toolCall: ToolCall) => {
+    switch (name) {
+        case "analyze_sentiment":
+        case "count_words":
+            // Explicitly check and handle text argument
+            if (!args.text) {
+                throw new Error('Text argument is required');
+            }
+            return name === "analyze_sentiment"
+                ? analyzeSentiment(args.text!)
+                : countWords(args.text!);
+        case "get_current_datetime":
+            // Allow tool without text argument
+            return getCurrentDateTime();
+    }
+}
+```
+
+#### Tool Interface Definition
+**Best Practice**: Define a flexible `ToolCall` interface to support various tool arguments
+```typescript
+interface ToolCall {
+    name: string;
+    arguments: {
+        text?: string;  // Optional text argument
+        [key: string]: any;  // Allow additional dynamic arguments
+    };
+}
+```
+
+### Tool Execution Challenges
+
+#### Handling Tools with Different Argument Requirements
+**Problem**: Some tools require text, some don't
+**Solution**: Implement conditional argument checking in `executeToolCall`
+- Use type-safe argument extraction
+- Provide clear error messages
+- Support tools with and without arguments
+
+#### OpenRouter API Tool Call Parsing
+**Common Pitfalls**:
+1. Incorrect tool name extraction
+```typescript
+// ❌ Incorrect
+const toolName = toolCall.name;
+
+// ✅ Correct
+const toolName = toolCall.function?.name;
+const toolArgs = JSON.parse(toolCall.function?.arguments || '{}');
+```
+
+### Debugging Strategies
+
+#### Logging Tool Calls
+```typescript
+console.log('Tool call received:', {
+    name: toolCall.function?.name,
+    arguments: toolCall.function?.arguments
+});
+```
+
+#### Error Handling in Tool Execution
+```typescript
+try {
+    const toolResult = await executeToolCall({
+        name: toolName,
+        arguments: toolArgs
+    });
+} catch (error) {
+    console.error('Tool execution failed:', error);
+    // Provide user-friendly error handling
+}
+```
+
+### Performance and Security Considerations
+
+1. Validate tool names against a predefined list
+2. Implement strict type checking
+3. Use non-null assertions (`!`) sparingly
+4. Prefer type assertions or type guards
+
+### Recommended Tool Design Patterns
+
+1. **Flexible Argument Handling**
+   - Support optional arguments
+   - Provide default values
+   - Validate input rigorously
+
+2. **Clear Error Messages**
+   - Specific error descriptions
+   - Helpful debugging information
+   - User-friendly error handling
+
+3. **Extensible Tool Architecture**
+   - Easy to add new tools
+   - Consistent execution pattern
+   - Minimal boilerplate code
+
+## Layout and Scrolling Issues
+
+### Common Layout Problems
+
+1. Sidebar Content Not Scrolling
+```typescript
+// ❌ Wrong - Using ScrollArea without proper container setup
+<ScrollArea>
+  <div className="p-4 space-y-4">
+    {tools.map((tool) => (...))}
+  </div>
+</ScrollArea>
+
+// ✅ Correct - Using native scrolling with proper overflow handling
+<aside className="border-r bg-muted/40 flex flex-col overflow-hidden">
+  <div className="border-b px-4 py-2 flex-none">
+    <h2 className="text-lg font-semibold">Available Tools</h2>
+  </div>
+  <div className="flex-1 overflow-auto">
+    <div className="p-4 space-y-4">
+      {tools.map((tool) => (...))}
+    </div>
+  </div>
+</aside>
+```
+
+2. Chat Area Not Filling Screen
+```typescript
+// ❌ Wrong - Using fixed heights or incomplete flex setup
+<main className="h-screen">
+  <div className="chat-area">...</div>
+</main>
+
+// ✅ Correct - Using proper flex layout and overflow handling
+<main className="flex flex-col h-full overflow-hidden">
+  <div className="flex-1 overflow-auto p-4">
+    <div className="max-w-3xl mx-auto space-y-4">
+      {messages.map((message) => (...))}
+    </div>
+  </div>
+  <footer className="border-t p-4 flex-none bg-background">
+    {...}
+  </footer>
+</main>
+```
+
+3. Mobile Viewport Height Issues
+```typescript
+// ❌ Wrong - Using h-screen which can cause issues on mobile
+<div className="h-screen">
+
+// ✅ Correct - Using dynamic viewport height
+<div className="h-[100dvh]">
+```
+
+### Best Practices for Layout
+
+1. Flex Container Structure:
+   - Use `flex-none` for fixed-height elements
+   - Use `flex-1` for expanding elements
+   - Add `overflow-hidden` to containers
+   - Add `overflow-auto` to scrollable areas
+
+2. Mobile Considerations:
+   - Use dynamic viewport height (`dvh`)
+   - Test on different devices
+   - Handle keyboard appearance
+
+3. Scroll Management:
+   - Implement smooth scrolling
+   - Handle scroll to bottom on new messages
+   - Style scrollbars for better UX
+
+4. Footer Positioning:
+   - Keep input area visible
+   - Handle overflow properly
+   - Add background color to ensure visibility
+
+### CSS Solutions
+
+1. Scrollbar Styling
+```css
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-600;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400 dark:bg-slate-500;
+}
+```
+
+2. Flex Container Rules
+```css
+.flex-1 {
+    min-width: 0; /* Prevents flex item overflow */
+}
+```
+
+3. Smooth Scrolling
+```css
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+```
+
+### Debugging Layout Issues
+
+1. Common Signs of Layout Problems:
+   - Content disappearing behind footer
+   - Scrolling not working in specific areas
+   - Layout breaking on mobile devices
+   - Content overflow issues
+
+2. Debugging Steps:
+   - Inspect element hierarchy
+   - Check flex container setup
+   - Verify overflow properties
+   - Test on different viewports
+
+3. Performance Considerations:
+   - Monitor scroll performance
+   - Check for layout shifts
+   - Optimize render cycles
+   - Handle large message lists

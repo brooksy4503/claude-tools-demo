@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { analyzeSentiment, countWords, executeToolCall } from '@/utils/tools';
+import { executeToolCall } from '@/utils/tools';
 
 const tools = [
     {

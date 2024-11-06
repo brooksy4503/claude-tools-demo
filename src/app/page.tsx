@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Calendar, Clock, MessageSquare, NewspaperIcon, Send } from "lucide-react"
+import { Clock, MessageSquare, NewspaperIcon, Send } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"

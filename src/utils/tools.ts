@@ -1,5 +1,3 @@
-
-
 export const analyzeSentiment = (text: string) => {
     // Enhanced sentiment analysis implementation
     const positiveWords = [
@@ -14,7 +12,7 @@ export const analyzeSentiment = (text: string) => {
     // Split into words and remove punctuation
     const words = text.toLowerCase().replace(/[.,!?]/g, '').split(/\s+/);
     let score = 0;
-    let matches: string[] = [];
+    const matches: string[] = [];
 
     words.forEach(word => {
         if (positiveWords.includes(word)) {

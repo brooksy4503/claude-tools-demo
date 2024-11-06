@@ -1,6 +1,6 @@
 # Claude Tools Demo
 
-A demo application showcasing Claude's tool use capabilities through OpenRouter. This project demonstrates how to build a chat interface that leverages Claude's ability to use custom tools for tasks like sentiment analysis and word counting.
+A demo application showcasing Claude's tool use capabilities through OpenRouter. This project demonstrates how to build a chat interface that leverages Claude's ability to use custom tools for tasks like sentiment analysis and word counting. Please note that live demo does not have api connected. You will need to add your own api key.
 
 ## Features
 
